@@ -2,14 +2,26 @@ use v8;
 
 macro_rules! v8_bool {
     ($scope: expr, $b: expr) => {
-        v8::Boolean::new($scope, $b).into()
+        v8::Boolean::new($scope, $b)
+    };
+}
+
+macro_rules! v8_number {
+    ($scope: expr, $n: expr) => {
+        v8::Number::new($scope, $n)
+    };
+}
+
+macro_rules! v8_string {
+    ($scope: expr, $s: expr) => {
+        v8::String::new($scope, $s)
     };
 }
 
 fn println_callback(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, mut m_return: v8::ReturnValue) {
     let message = args.get(0).to_string(scope).unwrap().to_rust_string_lossy(scope);
 
-    m_return.set(v8_bool!(scope, true));
+    m_return.set(v8_bool!(scope, true).into());
 
     println!("{}", message);
 }
