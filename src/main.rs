@@ -1,5 +1,7 @@
 use v8;
 
+mod fib;
+
 macro_rules! v8_bool {
     ($scope: expr, $b: expr) => {
         v8::Boolean::new($scope, $b)
@@ -26,18 +28,6 @@ fn println_callback(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArgum
     println!("{}", message);
 }
 
-fn collect_callback(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, mut m_return: v8::ReturnValue) {
-    let array = v8::Array::new(scope, 0);
-
-    for i in 0..args.length() {
-        let arg = args.get(i);
-
-        array.set_index(scope, i as u32, arg);
-    }
-
-    m_return.set(array.into());
-}
-
 fn main() {
     println!("Playing around with some v8 APIs for now...");
 
@@ -62,33 +52,14 @@ fn main() {
     }
 
     global_fn!("println", println_callback);
-    global_fn!("collect", collect_callback);
 
     let context = v8::Context::new_from_template(scope, global);
     let scope = &mut v8::ContextScope::new(scope, context);
 
-    let code = v8::String::new(scope, "
-        function fib(n) {
-            if (n < 2) {
-                return n
-            }
+    let proc = std::env::args().nth(1).unwrap();
 
-            return fib(n - 2) + fib(n - 1)
-        }
-
-        println(fib(30))
-
-        let items = collect(1, 2, 3)
-
-        println(items)
-    ").unwrap();
-
-    println!("code: {}", code.to_rust_string_lossy(scope));
-
-    let script = v8::Script::compile(scope, code, None).unwrap();
-
-    let result = script.run(scope).unwrap();
-    let result = result.to_string(scope).unwrap();
-
-    println!("result: {}", result.to_rust_string_lossy(scope));
+    match proc.as_str() {
+        "fib" => fib::fib(scope),
+        _ => println!("Undefined procedure: {}", proc),
+    }
 }
