@@ -1,6 +1,7 @@
 use v8;
 
 mod fib;
+mod func;
 
 macro_rules! v8_bool {
     ($scope: expr, $b: expr) => {
@@ -60,6 +61,7 @@ fn main() {
 
     match proc.as_str() {
         "fib" => fib::fib(scope),
+        "func" => func::func(scope),
         _ => println!("Undefined procedure: {}", proc),
     }
 }
