@@ -1,7 +1,9 @@
 use v8;
 
-fn println_callback(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, _: v8::ReturnValue) {
+fn println_callback(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, mut m_return: v8::ReturnValue) {
     let message = args.get(0).to_string(scope).unwrap().to_rust_string_lossy(scope);
+
+    m_return.set(v8::Boolean::new(scope, true).into());
 
     println!("{}", message);
 }
